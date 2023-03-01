@@ -6,6 +6,7 @@ import (
 	"startup-crowdfunding/user"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type userHandler struct {
@@ -21,10 +22,20 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	// capture input dari user
 	var input user.RegisterUserInput
 
+	// error validasi akan muncul disini
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
-		response := helper.APIResponse("Registering account failed", http.StatusBadRequest, "error", nil)
-		c.JSON(http.StatusBadRequest, response)
+		// array string untuk membungkus error validasi
+		var errors []string
+		for _, e := range err.(validator.ValidationErrors) {
+			errors = append(errors, e.Error())
+		}
+
+		// mapping errors ke daam field errors
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Registering account failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
 
