@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"startup-crowdfunding/helper"
 	"startup-crowdfunding/user"
 
 	"github.com/gin-gonic/gin"
@@ -22,13 +23,16 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, nil)
+		c.JSON(http.StatusBadRequest, "JSON binding went wrong")
 	}
 
 	user, err := h.userService.RegisterUser(input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, nil)
+		c.JSON(http.StatusBadRequest, "Service went wrong")
 	}
 
-	c.JSON(http.StatusOK, user)
+	formatter := helper.FormatUser(user, "token")
+
+	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", formatter)
+	c.JSON(http.StatusOK, response)
 }
