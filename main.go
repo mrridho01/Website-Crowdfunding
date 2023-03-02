@@ -25,6 +25,7 @@ func main() {
 	api := router.Group("/api/v1")
 
 	api.POST("/user", userHandler.RegisterUser)
+	api.POST("/user", userHandler.Login)
 
 	router.Run()
 }
