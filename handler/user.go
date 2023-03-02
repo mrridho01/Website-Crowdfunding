@@ -17,6 +17,7 @@ func NewUserHandler(userService user.Service) *userHandler {
 	return &userHandler{userService}
 }
 
+// handler untuk endpoint register user
 func (h *userHandler) RegisterUser(c *gin.Context) {
 	// capture input dari user
 	var input user.RegisterUserInput
@@ -50,6 +51,7 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// handler untuk endpoint login
 func (h *userHandler) Login(c *gin.Context) {
 	var input user.LoginInput
 
@@ -77,4 +79,15 @@ func (h *userHandler) Login(c *gin.Context) {
 	response := helper.APIResponse("Login success", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
 
+}
+
+// handler untuk integrasi mendapatkan user yang sedang login
+func (h *userHandler) FetchUser(c *gin.Context) {
+	currentUser := c.MustGet("currentUser").(user.User)
+
+	formatter := helper.FormatUser(currentUser, "token")
+
+	response := helper.APIResponse("Successfully fetch user data", http.StatusOK, "success", formatter)
+
+	c.JSON(http.StatusOK, response)
 }
