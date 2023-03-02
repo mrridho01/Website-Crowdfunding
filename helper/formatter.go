@@ -3,6 +3,8 @@ package helper
 import (
 	"startup-crowdfunding/user"
 	"time"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type UserFormatter struct {
@@ -29,4 +31,14 @@ func FormatUser(user user.User, token string) UserFormatter {
 	}
 
 	return formatter
+}
+
+func FormatError(err error) []string {
+	// array string untuk membungkus error validasi
+	var errors []string
+	for _, e := range err.(validator.ValidationErrors) {
+		errors = append(errors, e.Error())
+	}
+
+	return errors
 }
