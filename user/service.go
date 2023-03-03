@@ -11,6 +11,7 @@ type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error)
 	Login(input LoginInput) (User, error)
 	IsEmailAvailable(input CheckEmailInput) (bool, error)
+	SaveAvatar(id uint, filePath string) (User, error)
 }
 
 // struct internal untuk mengakses interface Repository
@@ -85,4 +86,20 @@ func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
 
 	// nilai default yakni false
 	return false, nil
+}
+
+func (s *service) SaveAvatar(id uint, filePath string) (User, error) {
+	user, err := s.repository.FindById(id)
+	if err != nil {
+		return user, err
+	}
+
+	user.AvatarFileName = filePath
+
+	updatedUser, err := s.repository.Update(user)
+	if err != nil {
+		return updatedUser, err
+	}
+
+	return updatedUser, nil
 }
