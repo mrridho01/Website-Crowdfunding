@@ -10,6 +10,7 @@ import (
 type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error)
 	Login(input LoginInput) (User, error)
+	IsEmailAvailable(input CheckEmailInput) (bool, error)
 }
 
 // struct internal untuk mengakses interface Repository
@@ -66,4 +67,22 @@ func (s *service) Login(input LoginInput) (User, error) {
 	}
 
 	return user, nil
+}
+
+func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
+	email := input.Email
+
+	user, err := s.repository.FindByEmail(email)
+	// apabila email tidak available, artinya ada kesalahan, return false dan error
+	if err != nil {
+		return false, err
+	}
+
+	// check apakah user pernah mendaftar sebelumnya
+	if user.ID == 0 {
+		return true, nil
+	}
+
+	// nilai default yakni false
+	return false, nil
 }
