@@ -70,6 +70,7 @@ func (s *service) Login(input LoginInput) (User, error) {
 	return user, nil
 }
 
+// service untuk mengecek apakah email sudah pernah terdaftar atau belum
 func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
 	email := input.Email
 
@@ -88,6 +89,7 @@ func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
 	return false, nil
 }
 
+// service untuk mennyimpan avatar file path
 func (s *service) SaveAvatar(id uint, filePath string) (User, error) {
 	user, err := s.repository.FindById(id)
 	if err != nil {

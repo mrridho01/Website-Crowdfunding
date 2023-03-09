@@ -133,4 +133,43 @@ func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
 
 func (h *userHandler) UploadAvatar(c *gin.Context) {
 	// menangkap input dari user bukan dalam bentuk JSON, namun dalam form data
+
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		// helper bawaan gin untuk membuat map
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+
+		return
+	}
+
+	//save file
+	path := "images/" + file.Filename
+	err = c.SaveUploadedFile(file, "images/"+path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+
+		return
+	}
+
+	//fake jwt
+	_, err = h.userService.SaveAvatar(16, path)
+	if err != nil {
+		data := gin.H{"is_uploaded": false}
+		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
+
+		c.JSON(http.StatusBadRequest, response)
+
+		return
+	}
+
+	data := gin.H{"is_uploaded": true}
+	response := helper.APIResponse("Success upload avatar image", http.StatusOK, "success", data)
+
+	c.JSON(http.StatusOK, response)
 }
