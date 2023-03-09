@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"startup-crowdfunding/auth"
 	"startup-crowdfunding/helper"
 	"startup-crowdfunding/user"
 
@@ -11,11 +12,12 @@ import (
 
 type userHandler struct {
 	userService user.Service
+	authService auth.Service
 }
 
 // membuat instance struct userHandler
-func NewUserHandler(userService user.Service) *userHandler {
-	return &userHandler{userService}
+func NewUserHandler(userService user.Service, authService auth.Service) *userHandler {
+	return &userHandler{userService, authService}
 }
 
 // handler untuk endpoint register user
@@ -37,16 +39,19 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 
 	user, err := h.userService.RegisterUser(input)
 	if err != nil {
-		errors := helper.FormatError(err)
-		// mapping errors ke dalam field errors
-		errorMessage := gin.H{"errors": errors}
-
-		response := helper.APIResponse("Registering account failed", http.StatusBadRequest, "error", errorMessage)
+		response := helper.APIResponse("Registering account failed", http.StatusBadRequest, "error", nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	formatter := helper.FormatUser(user, "token")
+	token, err := h.authService.GenerateToken(user.ID)
+	if err != nil {
+		response := helper.APIResponse("Registering account failed", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := helper.FormatUser(user, token)
 
 	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
@@ -76,7 +81,14 @@ func (h *userHandler) Login(c *gin.Context) {
 		return
 	}
 
-	formatter := helper.FormatUser(loggedUser, "token")
+	token, err := h.authService.GenerateToken(loggedUser.ID)
+	if err != nil {
+		response := helper.APIResponse("Login failed", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	formatter := helper.FormatUser(loggedUser, token)
 	response := helper.APIResponse("Login success", http.StatusOK, "success", formatter)
 	c.JSON(http.StatusOK, response)
 
@@ -161,7 +173,6 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		return
 	}
 
-	//fake jwt
 	_, err = h.userService.SaveAvatar(uint(userId), path)
 	if err != nil {
 		data := gin.H{"is_uploaded": false}

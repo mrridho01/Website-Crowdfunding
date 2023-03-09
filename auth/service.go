@@ -11,6 +11,10 @@ type jwtService struct{}
 //fake secret key
 var SECRET_KEY = []byte("STARTUP_crowdfund1ng")
 
+func NewJwtService() *jwtService {
+	return &jwtService{}
+}
+
 func (j *jwtService) GenerateToken(userId uint) (string, error) {
 	claim := jwt.MapClaims{}
 	claim["user_id"] = userId
