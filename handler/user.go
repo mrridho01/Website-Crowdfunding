@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"startup-crowdfunding/helper"
 	"startup-crowdfunding/user"
@@ -145,9 +146,12 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		return
 	}
 
-	//save file
-	path := "images/" + file.Filename
-	err = c.SaveUploadedFile(file, "images/"+path)
+	//save file, fake JWT
+	userId := 16
+
+	path := fmt.Sprintf("images/%d-%s", userId, file.Filename)
+
+	err = c.SaveUploadedFile(file, path)
 	if err != nil {
 		data := gin.H{"is_uploaded": false}
 		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
@@ -158,7 +162,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 	}
 
 	//fake jwt
-	_, err = h.userService.SaveAvatar(16, path)
+	_, err = h.userService.SaveAvatar(uint(userId), path)
 	if err != nil {
 		data := gin.H{"is_uploaded": false}
 		response := helper.APIResponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
