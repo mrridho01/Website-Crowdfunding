@@ -12,6 +12,7 @@ type Service interface {
 	Login(input LoginInput) (User, error)
 	IsEmailAvailable(input CheckEmailInput) (bool, error)
 	SaveAvatar(id uint, filePath string) (User, error)
+	GetUserByID(id uint) (User, error)
 }
 
 // struct internal untuk mengakses interface Repository
@@ -104,4 +105,18 @@ func (s *service) SaveAvatar(id uint, filePath string) (User, error) {
 	}
 
 	return updatedUser, nil
+}
+
+// Middleware - Mendapatkan user berdasarkan user_id dari jwt token
+func (s *service) GetUserByID(id uint) (User, error) {
+	user, err := s.repository.FindById(id)
+	if err != nil {
+		return user, err
+	}
+
+	if user.ID == 0 {
+		return user, errors.New("no user found")
+	}
+
+	return user, nil
 }

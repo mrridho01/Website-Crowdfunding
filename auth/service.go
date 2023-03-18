@@ -21,6 +21,7 @@ func NewJwtService() *jwtService {
 }
 
 func (j *jwtService) GenerateToken(userId uint) (string, error) {
+	//generate token dengan payload nya adalah userId
 	claim := jwt.MapClaims{}
 	claim["user_id"] = userId
 
