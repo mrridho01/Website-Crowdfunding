@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"startup-crowdfunding/auth"
+	"startup-crowdfunding/campaign"
 	"startup-crowdfunding/handler"
 	"startup-crowdfunding/helper"
 	"startup-crowdfunding/user"
@@ -20,6 +21,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+
+	db.AutoMigrate(&user.User{}, &campaign.Campaign{}, &campaign.CampaignImage{})
 
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
