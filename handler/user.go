@@ -146,7 +146,6 @@ func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
 
 func (h *userHandler) UploadAvatar(c *gin.Context) {
 	// menangkap input dari user bukan dalam bentuk JSON, namun dalam form data
-
 	file, err := c.FormFile("avatar")
 	if err != nil {
 		// helper bawaan gin untuk membuat map
@@ -158,8 +157,9 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		return
 	}
 
-	//save file, fake JWT
-	userId := 16
+	// get current user berdasarkan context currentUser
+	currentUser := c.MustGet("currentUser").(user.User)
+	userId := currentUser.ID
 
 	path := fmt.Sprintf("images/%d-%s", userId, file.Filename)
 

@@ -75,7 +75,7 @@ func authMiddleware(authService auth.Service, userService user.Service) gin.Hand
 			return
 		}
 
-		userId := claim["user_id"].(uint)
+		userId := uint(claim["user_id"].(float64))
 		// ambil user dari repo berdasarkan userId
 		user, err := userService.GetUserByID(userId)
 		if err != nil {
