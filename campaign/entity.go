@@ -13,6 +13,7 @@ type Campaign struct {
 	GoalAmount       int
 	CurrentAmount    int
 	Slug             string
+	CampaignImages   []CampaignImage
 }
 
 type CampaignImage struct {
