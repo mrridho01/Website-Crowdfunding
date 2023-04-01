@@ -24,11 +24,18 @@ func main() {
 
 	db.AutoMigrate(&user.User{}, &campaign.Campaign{}, &campaign.CampaignImage{})
 
+	//create repository instance
 	userRepository := user.NewRepository(db)
+	campaignRepository := campaign.NewRepository(db)
+
+	//create service instance
 	userService := user.NewService(userRepository)
 	authService := auth.NewJwtService()
+	campaignService := campaign.NewService(campaignRepository)
 
+	//create handler instance
 	userHandler := handler.NewUserHandler(userService, authService)
+	campaignHandler := handler.NewCampaignHandler(campaignService)
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
@@ -37,6 +44,8 @@ func main() {
 	api.POST("/session", userHandler.Login)
 	api.POST("/email_checker", userHandler.CheckEmailAvailability)
 	api.POST("/avatar", authMiddleware(authService, userService), userHandler.UploadAvatar)
+
+	api.GET("/campaign", campaignHandler.GetCampaigns)
 
 	router.Run()
 }
