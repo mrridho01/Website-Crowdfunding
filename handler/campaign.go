@@ -34,5 +34,26 @@ func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 }
 
 func (h *campaignHandler) GetCampaign(c *gin.Context) {
-	//
+	//tangkap parameter id dari url / uri
+	var input campaign.GetCampaignDetailInput
+
+	err := c.ShouldBindUri(&input)
+	if err != nil {
+		// format error validation failed
+		error := helper.FormatError(err)
+		errorMessage := gin.H{"error": error}
+
+		response := helper.APIResponse("Failed to get detail campaign", http.StatusBadRequest, "error", errorMessage)
+		c.JSON(http.StatusBadRequest, response)
+	}
+
+	campaign, err := h.service.GetCampaignById(input)
+	if err != nil {
+		response := helper.APIResponse("Failed to get detail campaign", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+	}
+
+	response := helper.APIResponse("Success to get detail campaign", http.StatusOK, "success", campaign)
+	c.JSON(http.StatusOK, response)
+
 }
