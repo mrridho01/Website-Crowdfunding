@@ -1,6 +1,7 @@
 package campaign
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gosimple/slug"
@@ -77,6 +78,11 @@ func (s *service) UpdateCampaign(inputId GetCampaignDetailInput, inputData Creat
 	campaign, err := s.repository.FindById(inputId.Id)
 	if err != nil {
 		return campaign, err
+	}
+
+	// cek authorization
+	if campaign.UserId != inputData.User.ID {
+		return campaign, errors.New("not authorized")
 	}
 
 	//update data campaign dari inputData. Slug by design tidak di update
