@@ -79,16 +79,12 @@ func (s *service) UpdateCampaign(inputId GetCampaignDetailInput, inputData Creat
 		return campaign, err
 	}
 
-	//update data campaign dari inputData
+	//update data campaign dari inputData. Slug by design tidak di update
 	campaign.Name = inputData.Name
 	campaign.ShortDescription = inputData.ShortDescription
 	campaign.Description = inputData.Description
 	campaign.Perks = inputData.Perks
 	campaign.GoalAmount = inputData.GoalAmount
-
-	// generate slug
-	slugName := fmt.Sprintf("%s %d", inputData.Name, inputData.User.ID)
-	campaign.Slug = slug.Make(slugName)
 
 	updatedCampaign, err := s.repository.Update(campaign)
 	if err != nil {
