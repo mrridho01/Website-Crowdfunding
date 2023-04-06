@@ -73,8 +73,8 @@ func (s *service) CreateCampaign(input CreateCampaignInput) (Campaign, error) {
 
 }
 
-func (s *service) UpdateCampaign(id GetCampaignDetailInput, inputData CreateCampaignInput) (Campaign, error) {
-	campaign, err := s.repository.FindById(id.Id)
+func (s *service) UpdateCampaign(inputId GetCampaignDetailInput, inputData CreateCampaignInput) (Campaign, error) {
+	campaign, err := s.repository.FindById(inputId.Id)
 	if err != nil {
 		return campaign, err
 	}
