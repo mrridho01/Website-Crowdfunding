@@ -102,6 +102,16 @@ func (s *service) UpdateCampaign(inputId GetCampaignDetailInput, inputData Creat
 }
 
 func (s *service) SaveCampaignImage(inputImage CreateCampaignImageInput, fileLocation string) (CampaignImage, error) {
+	//ambil data campaign untuk authorization
+	campaign, err := s.repository.FindById(inputImage.CampaignId)
+	if err != nil {
+		return CampaignImage{}, err
+	}
+
+	if campaign.UserId != inputImage.User.ID {
+		return CampaignImage{}, errors.New("not authorized")
+	}
+
 	isPrimary := 0
 	if inputImage.IsPrimary {
 		_, err := s.repository.MarkAllImageAsNonPrimary(inputImage.CampaignId)
