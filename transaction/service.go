@@ -12,8 +12,8 @@ func NewService(repository Repository) *service {
 	return &service{repository}
 }
 
-func (s *service) GetTransactionsByCampaignId(campaignId uint) ([]Transaction, error) {
-	transactions, err := s.repository.FindByCampaignId(campaignId)
+func (s *service) GetTransactionsByCampaignId(input GetCampaignTransactionDetailInput) ([]Transaction, error) {
+	transactions, err := s.repository.FindByCampaignId(input.Id)
 
 	if err != nil {
 		return transactions, err

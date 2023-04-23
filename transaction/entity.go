@@ -1,6 +1,10 @@
 package transaction
 
-import "gorm.io/gorm"
+import (
+	"startup-crowdfunding/user"
+
+	"gorm.io/gorm"
+)
 
 type Transaction struct {
 	gorm.Model
@@ -9,4 +13,5 @@ type Transaction struct {
 	Amount     int
 	Status     string
 	Code       string
+	User       user.User
 }
