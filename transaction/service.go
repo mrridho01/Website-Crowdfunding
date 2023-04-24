@@ -1,7 +1,7 @@
 package transaction
 
 type Service interface {
-	GetTransactionsByCampaignId(campaignId uint) ([]Transaction, error)
+	GetTransactionsByCampaignId(input GetCampaignTransactionDetailInput) ([]Transaction, error)
 }
 
 type service struct {

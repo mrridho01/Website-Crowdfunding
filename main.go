@@ -7,6 +7,7 @@ import (
 	"startup-crowdfunding/campaign"
 	"startup-crowdfunding/handler"
 	"startup-crowdfunding/helper"
+	"startup-crowdfunding/transaction"
 	"startup-crowdfunding/user"
 	"strings"
 
@@ -22,20 +23,23 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	db.AutoMigrate(&user.User{}, &campaign.Campaign{}, &campaign.CampaignImage{})
+	db.AutoMigrate(&user.User{}, &campaign.Campaign{}, &campaign.CampaignImage{}, &transaction.Transaction{})
 
 	//create repository instance
 	userRepository := user.NewRepository(db)
 	campaignRepository := campaign.NewRepository(db)
+	transactionRepository := transaction.NewRepository(db)
 
 	//create service instance
 	userService := user.NewService(userRepository)
 	authService := auth.NewJwtService()
 	campaignService := campaign.NewService(campaignRepository)
+	transactionService := transaction.NewService(transactionRepository)
 
 	//create handler instance
 	userHandler := handler.NewUserHandler(userService, authService)
 	campaignHandler := handler.NewCampaignHandler(campaignService)
+	transactionHandler := handler.NewTransactionHandler(transactionService)
 
 	router := gin.Default()
 	//static image routing
@@ -51,6 +55,7 @@ func main() {
 
 	api.GET("/campaign", campaignHandler.GetCampaigns)
 	api.GET("/campaign/:id", campaignHandler.GetCampaign)
+	api.GET("campaign/:id/transaction", authMiddleware(authService, userService), transactionHandler.GetCampaignTransaction)
 
 	api.PUT("/campaign/:id", authMiddleware(authService, userService), campaignHandler.UpdateCampaign)
 
