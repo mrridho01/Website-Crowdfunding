@@ -56,6 +56,7 @@ func main() {
 	api.GET("/campaign", campaignHandler.GetCampaigns)
 	api.GET("/campaign/:id", campaignHandler.GetCampaign)
 	api.GET("campaign/:id/transaction", authMiddleware(authService, userService), transactionHandler.GetCampaignTransaction)
+	api.GET("/transaction", authMiddleware(authService, userService), transactionHandler.GetUserTransaction)
 
 	api.PUT("/campaign/:id", authMiddleware(authService, userService), campaignHandler.UpdateCampaign)
 
