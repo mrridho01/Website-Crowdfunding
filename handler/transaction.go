@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"startup-crowdfunding/helper"
 	"startup-crowdfunding/transaction"
+	"startup-crowdfunding/user"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,6 +31,10 @@ func (h *transactionHandler) GetCampaignTransaction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+
+	// ambil data user dari input, untuk ditambahkan sebagai parameter service
+	currentUser := c.MustGet("currentUser").(user.User)
+	input.User = currentUser
 
 	transactions, err := h.service.GetTransactionsByCampaignId(input)
 	if err != nil {
