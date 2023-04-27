@@ -2,6 +2,7 @@ package helper
 
 import (
 	"startup-crowdfunding/campaign"
+	"startup-crowdfunding/transaction"
 	"startup-crowdfunding/user"
 	"strings"
 	"time"
@@ -55,6 +56,13 @@ type CampaignDetailUserFormatter struct {
 type CampaignDetailImageFormatter struct {
 	ImageURL  string `json:"image_url"`
 	IsPrimary bool   `json:"is_primary"`
+}
+
+type CampaignTransactionFormatter struct {
+	Id        uint      `json:"id"`
+	Name      string    `json:"name"`
+	Amount    int       `json:"amount"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func FormatUser(user user.User, token string) UserFormatter {
@@ -159,6 +167,32 @@ func FormatCampaignDetail(campaign campaign.Campaign) CampaignDetailFormatter {
 	formatter.Images = images
 
 	return formatter
+}
+
+func FormatCampaignTransaction(transaction transaction.Transaction) CampaignTransactionFormatter {
+	formatter := CampaignTransactionFormatter{
+		Id:        transaction.ID,
+		Name:      transaction.User.Name,
+		Amount:    transaction.Amount,
+		CreatedAt: transaction.CreatedAt,
+	}
+
+	return formatter
+}
+
+func FormatCampaignTransactions(transactions []transaction.Transaction) []CampaignTransactionFormatter {
+	if len(transactions) == 0 {
+		return []CampaignTransactionFormatter{}
+	}
+
+	var transactionsFormatter []CampaignTransactionFormatter
+
+	for _, transaction := range transactions {
+		formatter := FormatCampaignTransaction(transaction)
+		transactionsFormatter = append(transactionsFormatter, formatter)
+	}
+
+	return transactionsFormatter
 }
 
 func FormatError(err error) []string {
