@@ -8,6 +8,7 @@ import (
 type Service interface {
 	GetTransactionsByCampaignId(input GetCampaignTransactionDetailInput) ([]Transaction, error)
 	GetTransactionsByUserId(userId uint) ([]Transaction, error) //userid didapat dari jwt token
+	CreateTransaction(input CreateTransactionInput) (Transaction, error)
 }
 
 type service struct {
@@ -46,4 +47,20 @@ func (s *service) GetTransactionsByUserId(userId uint) ([]Transaction, error) {
 	}
 
 	return transactions, nil
+}
+
+func (s *service) CreateTransaction(input CreateTransactionInput) (Transaction, error) {
+	transaction := Transaction{
+		CampaignId: input.CampaignId,
+		Amount:     input.Amount,
+		UserId:     input.User.ID,
+		Status:     "pending",
+	}
+
+	newTransaction, err := s.repository.Save(transaction)
+	if err != nil {
+		return newTransaction, err
+	}
+
+	return newTransaction, nil
 }
